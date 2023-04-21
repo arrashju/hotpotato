@@ -1,47 +1,109 @@
 import Document, { Html, Head, Main, NextScript } from "next/document";
+import PropTypes from "prop-types";
 import * as React from "react";
 import { renderStatic } from "../shared/renderer";
+import createEmotionServer from "@emotion/server/create-instance";
+import createEmotionCache from "../src/createEmotionCache";
 
-export default class AppDocument extends Document {
-  static async getInitialProps(ctx: any) {
-    const page = await ctx.renderPage();
-    const { css, ids } = await renderStatic(page.html);
-    const initialProps = await Document.getInitialProps(ctx);
-    return {
-      ...initialProps,
-      styles: (
-        <React.Fragment>
-          {initialProps.styles}
-          <style
-            data-emotion={`css ${ids.join(" ")}`}
-            dangerouslySetInnerHTML={{ __html: css }}
-          />
-        </React.Fragment>
-      ),
-    };
-  }
+export default function MyDocument(props: any) {
+  const { emotionStyleTags } = props;
 
-  render() {
-    return (
-      <Html lang="en">
-        <Head>
-          <meta name="theme-color" content="#fff" />
-          <meta
-            name="description"
-            content="A Personalized Meal Delivery Service"
-          ></meta>
-          <meta name="keywords" content="Home Cart"></meta>
-          <meta name="robots" content="all" />
-          <link
-            href="https://fonts.googleapis.com/css?family=Montserrat:400,500,600"
-            rel="stylesheet"
-          />
-        </Head>
-        <body>
-          <Main />
-          <NextScript />
-        </body>
-      </Html>
-    );
-  }
+  return (
+    <Html lang="en">
+      <Head>
+        <meta name="theme-color" content="#fff" />
+        <meta
+          name="description"
+          content="A Personalized Meal Delivery Service"
+        ></meta>
+        <meta name="keywords" content="Home Cart"></meta>
+        <meta name="robots" content="all" />
+        <link
+          href="https://fonts.googleapis.com/css?family=Montserrat:400,500,600"
+          rel="stylesheet"
+        />
+        {emotionStyleTags}
+      </Head>
+      <body>
+        <Main />
+        <NextScript />
+      </body>
+    </Html>
+  );
 }
+
+// `getInitialProps` belongs to `_document` (instead of `_app`),
+// it's compatible with static-site generation (SSG).
+MyDocument.getInitialProps = async (ctx: any) => {
+  // Resolution order
+  //
+  // On the server:
+  // 1. app.getInitialProps
+  // 2. page.getInitialProps
+  // 3. document.getInitialProps
+  // 4. app.render
+  // 5. page.render
+  // 6. document.render
+  //
+  // On the server with error:
+  // 1. document.getInitialProps
+  // 2. app.render
+  // 3. page.render
+  // 4. document.render
+  //
+  // On the client
+  // 1. app.getInitialProps
+  // 2. page.getInitialProps
+  // 3. app.render
+  // 4. page.render
+
+  const originalRenderPage = ctx.renderPage;
+
+  // You can consider sharing the same Emotion cache between all the SSR requests to speed up performance.
+  // However, be aware that it can have global side effects.
+  const cache = createEmotionCache();
+  const { extractCriticalToChunks } = createEmotionServer(cache);
+
+  ctx.renderPage = () =>
+    originalRenderPage({
+      enhanceApp: (App: any) =>
+        function EnhanceApp(props: any) {
+          return <App emotionCache={cache} {...props} />;
+        },
+    });
+
+  const page = await ctx.renderPage();
+
+  const initialProps = await Document.getInitialProps(ctx);
+  // This is important. It prevents Emotion to render invalid HTML.
+  // See https://github.com/mui/material-ui/issues/26561#issuecomment-855286153
+  const emotionStyles = extractCriticalToChunks(initialProps.html);
+  const emotionStyleTags = emotionStyles.styles.map((style: any) => (
+    <style
+      data-emotion={`${style.key} ${style.ids.join(" ")}`}
+      key={style.key}
+      // eslint-disable-next-line react/no-danger
+      dangerouslySetInnerHTML={{ __html: style.css }}
+    />
+  ));
+
+  const { css, ids } = await renderStatic(page.html);
+
+  return {
+    ...initialProps,
+    emotionStyleTags,
+    styles: (
+      <React.Fragment>
+        {initialProps.styles}
+        <style
+          data-emotion={`css ${ids.join(" ")}`}
+          dangerouslySetInnerHTML={{ __html: css }}
+        />
+      </React.Fragment>
+    ),
+  };
+};
+
+MyDocument.propTypes = {
+  emotionStyleTags: PropTypes.array.isRequired,
+};
