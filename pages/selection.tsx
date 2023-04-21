@@ -42,30 +42,32 @@ const Restaurant = ({ src, title, description, href }: Restaurant) => {
     <>
       <Card style={{ width: "298px" }}>
         <Link href={href} passHref>
-          <CardActionArea>
-            <CardMedia>
-              <img src={src} height="225px" />
-            </CardMedia>
-            <CardHeader
-              title={title}
-              style={{
-                fontFamily: "'Roboto'",
-                opacity: "87%",
-                fontSize: "20px",
-                color: "#000",
-              }}
-            />
-            <CardContent
-              style={{
-                fontFamily: "'Roboto'",
-                lineHeight: "150%",
-                opacity: "60%",
-                fontSize: "16px",
-              }}
-            >
-              {description}
-            </CardContent>
-          </CardActionArea>
+          <span>
+            <CardActionArea>
+              <CardMedia>
+                <img src={src} height="225px" />
+              </CardMedia>
+              <CardHeader
+                title={title}
+                style={{
+                  fontFamily: "'Roboto'",
+                  opacity: "87%",
+                  fontSize: "20px",
+                  color: "#000",
+                }}
+              />
+              <CardContent
+                style={{
+                  fontFamily: "'Roboto'",
+                  lineHeight: "150%",
+                  opacity: "60%",
+                  fontSize: "16px",
+                }}
+              >
+                {description}
+              </CardContent>
+            </CardActionArea>
+          </span>
         </Link>
       </Card>
     </>
