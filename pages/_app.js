@@ -1,31 +1,35 @@
 "use client";
 import "/styles/globals.css";
+import * as React from "react";
+import PropTypes from "prop-types";
 import Head from "next/head";
 import Layout from "../components/layout";
+import CssBaseline from "@mui/material/CssBaseline";
 import { CacheProvider } from "@emotion/react";
 import createEmotionCache from "../src/createEmotionCache";
 
+// Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
-export default function App({
-  Component,
-  emotionCache = clientSideEmotionCache,
-  pageProps,
-}) {
+export default function MyApp(props) {
+  const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
+
   return (
-    <>
+    <CacheProvider value={emotionCache}>
       <Head>
-        <meta property="og:title" content="Home Cart" key="title" />
-        {/* <meta property="og:image" content="/needtotalksquare.png" /> */}
-        <meta name="og:title" content="Home Cart" />
-        <meta property="og:name" content="Home Cart" />
-        <meta name="theme-color" content={"0000FF"} />
+        <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Head>
-      <CacheProvider value={emotionCache}>
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
-      </CacheProvider>
-    </>
+      {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+      <CssBaseline />
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
+    </CacheProvider>
   );
 }
+
+MyApp.propTypes = {
+  Component: PropTypes.elementType.isRequired,
+  emotionCache: PropTypes.object,
+  pageProps: PropTypes.object.isRequired,
+};

@@ -24,7 +24,6 @@ export default function Home() {
         setValue(3);
         break;
     }
-    console.log(router.pathname);
   }, []);
 
   return (

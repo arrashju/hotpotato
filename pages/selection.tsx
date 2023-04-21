@@ -13,14 +13,14 @@ export default function Home() {
     <>
       <RestaurantWrapper>
         <Restaurant
-          src="mcdonalds.webp"
+          src="/mcdonalds.webp"
           title="McDonalds"
           description="American fast-food chain that is one of the largest in the world,
             known for its hamburgers, especially its Big Macs"
           href="/mcdonalds"
         />
         <Restaurant
-          src="ihop.webp"
+          src="/ihop.webp"
           title="IHOP"
           description="American multinational pancake house restaurant chain that specializes in American breakfast foods"
           href="/mcdonalds"

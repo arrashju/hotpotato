@@ -1,7 +1,6 @@
-import Document, { Html, Head, Main, NextScript } from "next/document";
-import PropTypes from "prop-types";
 import * as React from "react";
-import { renderStatic } from "../shared/renderer";
+import PropTypes from "prop-types";
+import Document, { Html, Head, Main, NextScript } from "next/document";
 import createEmotionServer from "@emotion/server/create-instance";
 import createEmotionCache from "../src/createEmotionCache";
 
@@ -32,8 +31,6 @@ export default function MyDocument(props: any) {
   );
 }
 
-// `getInitialProps` belongs to `_document` (instead of `_app`),
-// it's compatible with static-site generation (SSG).
 MyDocument.getInitialProps = async (ctx: any) => {
   // Resolution order
   //
@@ -72,13 +69,11 @@ MyDocument.getInitialProps = async (ctx: any) => {
         },
     });
 
-  const page = await ctx.renderPage();
-
   const initialProps = await Document.getInitialProps(ctx);
   // This is important. It prevents Emotion to render invalid HTML.
   // See https://github.com/mui/material-ui/issues/26561#issuecomment-855286153
   const emotionStyles = extractCriticalToChunks(initialProps.html);
-  const emotionStyleTags = emotionStyles.styles.map((style: any) => (
+  const emotionStyleTags = emotionStyles.styles.map((style) => (
     <style
       data-emotion={`${style.key} ${style.ids.join(" ")}`}
       key={style.key}
@@ -87,20 +82,9 @@ MyDocument.getInitialProps = async (ctx: any) => {
     />
   ));
 
-  const { css, ids } = await renderStatic(page.html);
-
   return {
     ...initialProps,
     emotionStyleTags,
-    styles: (
-      <React.Fragment>
-        {initialProps.styles}
-        <style
-          data-emotion={`css ${ids.join(" ")}`}
-          dangerouslySetInnerHTML={{ __html: css }}
-        />
-      </React.Fragment>
-    ),
   };
 };
 
