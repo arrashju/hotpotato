@@ -1,21 +1,16 @@
 /** @type {import('next').NextConfig} */
 
-const withTM = require("next-transpile-modules")([
-  "@mui/material",
-  "@mui/system",
-  "@mui/icons-material", // If @mui/icons-material is being used
-]);
-
-const nextConfig = withTM({
+const nextConfig = {
   reactStrictMode: true,
   compiler: {
-    styledComponents: true,
+    emotion: true,
   },
   eslint: {
     // Warning: This allows production builds to successfully complete even if
     // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
-});
+  transpilePackages: ["@acme/ui", "lodash-es"],
+};
 
 module.exports = nextConfig;
