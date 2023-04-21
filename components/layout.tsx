@@ -1,5 +1,5 @@
 import Navbar from "./navbar";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import Footer from "./footer";
 
 export default function Layout({ children }: any) {
