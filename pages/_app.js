@@ -1,9 +1,17 @@
+"use client";
 import "/styles/globals.css";
-import type { AppProps } from "next/app";
 import Head from "next/head";
 import Layout from "../components/layout";
+import { CacheProvider } from "@emotion/react";
+import createEmotionCache from "../src/createEmotionCache";
 
-export default function App({ Component, pageProps }: AppProps) {
+const clientSideEmotionCache = createEmotionCache();
+
+export default function App({
+  Component,
+  emotionCache = clientSideEmotionCache,
+  pageProps,
+}) {
   return (
     <>
       <Head>
@@ -13,9 +21,11 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta property="og:name" content="Home Cart" />
         <meta name="theme-color" content={"0000FF"} />
       </Head>
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
+      <CacheProvider value={emotionCache}>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </CacheProvider>
     </>
   );
 }

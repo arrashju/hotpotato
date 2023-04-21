@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import { Button } from "@mui/material";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -12,17 +13,19 @@ export default function Home() {
         <OrderItem name="Total" price="$8.50" />
       </OrderDetails>
       <ButtonWrapper>
-        <Button
-          variant="contained"
-          style={{
-            textTransform: "none",
-            height: "48px",
-            minWidth: "301px",
-            fontSize: "19px",
-          }}
-        >
-          Place Order
-        </Button>
+        <Link href={"/confirmation"} passHref>
+          <Button
+            variant="contained"
+            style={{
+              textTransform: "none",
+              height: "48px",
+              minWidth: "301px",
+              fontSize: "19px",
+            }}
+          >
+            Place Order
+          </Button>
+        </Link>
       </ButtonWrapper>
     </>
   );
